@@ -21,7 +21,7 @@ object Ast {
   def divide(lhs: Expression, rhs: Expression): BinaryExpression = {
     BinaryExpression(Operator.Divide, lhs, rhs)
   }
-  
+
   def integer(value: Int): IntegerLiteral = {
     IntegerLiteral(value)
   }
