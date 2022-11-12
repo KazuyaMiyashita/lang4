@@ -1,6 +1,11 @@
 package lang4.calculator
 
-object Interpreter {
+import scala.collection.mutable
+import scala.util.chaining.*
+
+class Interpreter {
+
+  val environment: mutable.Map[String, Integer] = new mutable.HashMap[String, Integer]
 
   def interpret(expression: Ast.Expression): Int = {
     expression match {
@@ -14,6 +19,9 @@ object Interpreter {
           case Operator.Divide   => lv / rv
         }
       case Ast.IntegerLiteral(v) => v
+      case Ast.Identifier(name)  => environment(name)
+      case Ast.Assignment(name, expression) =>
+        interpret(expression).tap(environment.update(name, _))
     }
   }
 
