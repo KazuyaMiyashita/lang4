@@ -12,6 +12,13 @@ object Ast {
   /** 変数の代入を表す */
   final case class Assignment(name: String, expression: Expression) extends Expression
 
+  final case class BlockExpression(elements: List[Expression]) extends Expression
+
+  final case class WhileExpression(condition: Expression, body: Expression) extends Expression
+
+  final case class IfExpression(condition: Expression, thenClause: Expression, elseClause: Option[Expression])
+      extends Expression
+
   def add(lhs: Expression, rhs: Expression): BinaryExpression = {
     BinaryExpression(Operator.Add, lhs, rhs)
   }
@@ -27,6 +34,30 @@ object Ast {
   def divide(lhs: Expression, rhs: Expression): BinaryExpression = {
     BinaryExpression(Operator.Divide, lhs, rhs)
   }
+  
+  def lessThan(lhs: Expression, rhs: Expression): BinaryExpression = {
+    BinaryExpression(Operator.LessThan, lhs, rhs)
+  }
+
+  def lessOrEqual(lhs: Expression, rhs: Expression): BinaryExpression = {
+    BinaryExpression(Operator.LessOrEqual, lhs, rhs)
+  }
+
+  def greaterThan(lhs: Expression, rhs: Expression): BinaryExpression = {
+    BinaryExpression(Operator.GreaterThan, lhs, rhs)
+  }
+
+  def greaterOrEqual(lhs: Expression, rhs: Expression): BinaryExpression = {
+    BinaryExpression(Operator.GreaterOrEqual, lhs, rhs)
+  }
+
+  def equal(lhs: Expression, rhs: Expression): BinaryExpression = {
+    BinaryExpression(Operator.Equal, lhs, rhs)
+  }
+
+  def notEqual(lhs: Expression, rhs: Expression): BinaryExpression = {
+    BinaryExpression(Operator.NotEqual, lhs, rhs)
+  }
 
   def integer(value: Int): IntegerLiteral = {
     IntegerLiteral(value)
@@ -35,5 +66,15 @@ object Ast {
   def identifier(name: String): Identifier = Identifier(name)
 
   def assignment(name: String, expression: Expression): Assignment = Assignment(name, expression)
+
+  def block(elements: Expression*): BlockExpression = BlockExpression(elements.toList)
+
+  def _while(condition: Expression, body: Expression) = WhileExpression(condition, body)
+
+  def _if(condition: Expression, thenClause: Expression, elseClause: Expression): IfExpression =
+    IfExpression(condition, thenClause, Some(elseClause))
+
+  def _if(condition: Expression, thenClause: Expression): IfExpression =
+    IfExpression(condition, thenClause, None)
 
 }
