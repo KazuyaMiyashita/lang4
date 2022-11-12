@@ -1,11 +1,16 @@
 package lang4.calculator
 
+import lang4.calculator.Ast.GlobalVariableDefinition
+
 import scala.collection.mutable
 import scala.util.chaining.*
 
 class Interpreter {
 
-  val environment: mutable.Map[String, Integer] = new mutable.HashMap[String, Integer]
+  var variableEnvironment: Environment[Int] = Environment.empty[Int]
+
+  var functionEnvironment: Environment[Ast.FunctionDefinition] =
+    Environment.empty[Ast.FunctionDefinition]
 
   def interpret(expression: Ast.Expression): Int = {
     expression match {
@@ -25,16 +30,17 @@ class Interpreter {
           case Operator.NotEqual       => if (lv != rv) 1 else 0
         }
       case Ast.IntegerLiteral(v) => v
-      case Ast.Identifier(name)  => environment(name)
+      case Ast.Identifier(name)  => variableEnvironment(name)
       case Ast.Assignment(name, expression) =>
-        interpret(expression).tap(environment.update(name, _))
+        interpret(expression).tap(variableEnvironment.update(name, _))
       case Ast.IfExpression(condition, thenClause, elseClause) =>
         if (interpret(condition) != 0) {
           interpret(thenClause)
         } else {
-          elseClause match
+          elseClause match {
             case Some(expr) => interpret(expr)
-            case None => 1 // 値は整数しか扱えないため、条件が偽でelse部がない場合は値として1を返すことにする
+            case None       => 1 // 値は整数しか扱えないため、条件が偽でelse部がない場合は値として1を返すことにする
+          }
         }
       case Ast.WhileExpression(condition, body) =>
         while (interpret(condition) != 0) {
@@ -47,6 +53,39 @@ class Interpreter {
           value = interpret(elem)
         }
         value
+      case fnCall: Ast.FunctionCall =>
+        functionEnvironment.get(fnCall.name) match {
+          case None => throw new LanguageException(s"Function ${fnCall.name} is not found")
+          case Some(fnDef) =>
+            if (fnDef.args.length != fnCall.args.length) {
+              throw new LanguageException(
+                s"Function ${fnDef.name} requires ${fnDef.args.length} arguments, but given ${fnCall.args.length} arguments."
+              )
+            }
+            val values: List[Int] = fnCall.args.map(interpret)
+            val backup = variableEnvironment
+            variableEnvironment = variableEnvironment.newEnvironment
+            (fnDef.args zip values).foreach { (name, value) =>
+              variableEnvironment.update(name, value)
+            }
+            val result = interpret(fnDef.body)
+            variableEnvironment = backup
+            result
+        }
+    }
+  }
+
+  def callMain(program: Ast.Program): Int = {
+    program.definitions.foreach {
+      case fd: Ast.FunctionDefinition =>
+        functionEnvironment.update(fd.name, fd)
+      case Ast.GlobalVariableDefinition(name, expression) =>
+        variableEnvironment.update(name, interpret(expression))
+    }
+
+    functionEnvironment.get("main") match {
+      case Some(mainFunction) => interpret(mainFunction.body)
+      case None               => throw new LanguageException("This program doesn't have main() function")
     }
   }
 

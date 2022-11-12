@@ -2,6 +2,12 @@ package lang4.calculator
 
 object Ast {
 
+  final case class Program(definitions: List[TopLevel])
+
+  sealed trait TopLevel
+  final case class GlobalVariableDefinition(name: String, expression: Expression) extends TopLevel
+  final case class FunctionDefinition(name: String, args: List[String], body: Expression) extends TopLevel
+
   sealed trait Expression
   final case class BinaryExpression(operator: Operator, lhs: Expression, rhs: Expression) extends Expression
   final case class IntegerLiteral(value: Int) extends Expression
@@ -19,6 +25,8 @@ object Ast {
   final case class IfExpression(condition: Expression, thenClause: Expression, elseClause: Option[Expression])
       extends Expression
 
+  final case class FunctionCall(name: String, args: List[Expression]) extends Expression
+
   def add(lhs: Expression, rhs: Expression): BinaryExpression = {
     BinaryExpression(Operator.Add, lhs, rhs)
   }
@@ -34,7 +42,7 @@ object Ast {
   def divide(lhs: Expression, rhs: Expression): BinaryExpression = {
     BinaryExpression(Operator.Divide, lhs, rhs)
   }
-  
+
   def lessThan(lhs: Expression, rhs: Expression): BinaryExpression = {
     BinaryExpression(Operator.LessThan, lhs, rhs)
   }
@@ -76,5 +84,12 @@ object Ast {
 
   def _if(condition: Expression, thenClause: Expression): IfExpression =
     IfExpression(condition, thenClause, None)
+
+  def defFun(name: String, args: List[String], body: Expression): FunctionDefinition =
+    FunctionDefinition(name, args, body)
+
+  def callFun(name: String, args: Expression*): FunctionCall = FunctionCall(name, args.toList)
+
+  def makeProgram(definitions: TopLevel*): Program = Program(definitions.toList)
 
 }

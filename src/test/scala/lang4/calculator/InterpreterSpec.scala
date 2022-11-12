@@ -123,4 +123,36 @@ class InterpreterSpec extends AnyFlatSpec {
     assert(result == 6)
   }
 
+  it should "トップレベルの関数定義、グローバル変数を定義して、プラグラムを実行できる" in {
+    val interpreter = new Interpreter
+
+    val program: Program = makeProgram(
+      defFun(
+        "main",
+        Nil,
+        block(
+          callFun("fact", integer(5))
+        )
+      ),
+      defFun(
+        "fact",
+        List("n"),
+        block(
+          _if(
+            lessThan(identifier("n"), integer(2)),
+            integer(1),
+            multiply(
+              identifier("n"),
+              callFun("fact", subtract(identifier("n"), integer(1)))
+            )
+          )
+        )
+      )
+    )
+
+    val result = interpreter.callMain(program)
+
+    assert(result == 120)
+  }
+
 }
