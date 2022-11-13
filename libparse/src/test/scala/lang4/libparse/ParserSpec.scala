@@ -92,7 +92,7 @@ object ParserSpec {
     @tailrec
     def listToTree(head: Ast.Expression, tail: List[(Ast.Operator, Ast.Expression)]): Ast.Expression = {
       tail match {
-        case (op, expr) :: next => listToTree(Ast.BinaryExpression(op, head, expr), next) // fixme
+        case (op, expr) :: next => listToTree(Ast.BinaryExpression(op, head, expr), next)
         case Nil                => head
       }
     }

@@ -91,5 +91,7 @@ object Ast {
   def callFun(name: String, args: Expression*): FunctionCall = FunctionCall(name, args.toList)
 
   def makeProgram(definitions: TopLevel*): Program = Program(definitions.toList)
+  
+  def globalVarDef(name: String, expression: Expression): GlobalVariableDefinition = GlobalVariableDefinition(name, expression)
 
 }

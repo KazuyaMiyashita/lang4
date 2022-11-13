@@ -63,6 +63,13 @@ object Parser {
     } yield ParseSucceed((r1.result, r2.result), r2.remaining)
   }
 
+  /** 並び e1 e2 の間にスペース等の区切り文字 delimiter が存在する場合、それを読み飛ばすためのユーティリティ */
+  final def sequenceWithout[A1, A2](
+      delimiter: => Parser[_]
+  )(e1: => Parser[A1], e2: => Parser[A2]): Parser[(A1, A2)] = {
+    sequence(dropRight(e1, delimiter), e2)
+  }
+
   final def sequence[A1, A2, A3](e1: => Parser[A1], e2: => Parser[A2], e3: => Parser[A3]): Parser[(A1, A2, A3)] = {
     (in: String) =>
       for {
@@ -70,6 +77,12 @@ object Parser {
         r2 <- e2.parse(r1.remaining)
         r3 <- e3.parse(r2.remaining)
       } yield ParseSucceed((r1.result, r2.result, r3.result), r3.remaining)
+  }
+
+  final def sequenceWithout[A1, A2, A3](
+      delimiter: => Parser[_]
+  )(e1: => Parser[A1], e2: => Parser[A2], e3: => Parser[A3]): Parser[(A1, A2, A3)] = {
+    sequence(dropRight(e1, delimiter), dropRight(e2, delimiter), e3)
   }
 
   final def sequence[A1, A2, A3, A4](
@@ -84,6 +97,174 @@ object Parser {
       r3 <- e3.parse(r2.remaining)
       r4 <- e4.parse(r3.remaining)
     } yield ParseSucceed((r1.result, r2.result, r3.result, r4.result), r4.remaining)
+  }
+
+  final def sequenceWithout[A1, A2, A3, A4](
+      delimiter: => Parser[_]
+  )(
+      e1: => Parser[A1],
+      e2: => Parser[A2],
+      e3: => Parser[A3],
+      e4: => Parser[A4]
+  ): Parser[(A1, A2, A3, A4)] = {
+    sequence(dropRight(e1, delimiter), dropRight(e2, delimiter), dropRight(e3, delimiter), e4)
+  }
+
+  final def sequence[A1, A2, A3, A4, A5](
+      e1: => Parser[A1],
+      e2: => Parser[A2],
+      e3: => Parser[A3],
+      e4: => Parser[A4],
+      e5: => Parser[A5]
+  ): Parser[(A1, A2, A3, A4, A5)] = { (in: String) =>
+    for {
+      r1 <- e1.parse(in)
+      r2 <- e2.parse(r1.remaining)
+      r3 <- e3.parse(r2.remaining)
+      r4 <- e4.parse(r3.remaining)
+      r5 <- e5.parse(r4.remaining)
+    } yield ParseSucceed(
+      (
+        r1.result,
+        r2.result,
+        r3.result,
+        r4.result,
+        r5.result
+      ),
+      r5.remaining
+    )
+  }
+
+  final def sequenceWithout[A1, A2, A3, A4, A5](
+      delimiter: => Parser[_]
+  )(
+      e1: => Parser[A1],
+      e2: => Parser[A2],
+      e3: => Parser[A3],
+      e4: => Parser[A4],
+      e5: => Parser[A5]
+  ): Parser[(A1, A2, A3, A4, A5)] = {
+    sequence(dropRight(e1, delimiter), dropRight(e2, delimiter), dropRight(e3, delimiter), dropRight(e4, delimiter), e5)
+  }
+
+  final def sequence[A1, A2, A3, A4, A5, A6](
+      e1: => Parser[A1],
+      e2: => Parser[A2],
+      e3: => Parser[A3],
+      e4: => Parser[A4],
+      e5: => Parser[A5],
+      e6: => Parser[A6]
+  ): Parser[(A1, A2, A3, A4, A5, A6)] = { (in: String) =>
+    for {
+      r1 <- e1.parse(in)
+      r2 <- e2.parse(r1.remaining)
+      r3 <- e3.parse(r2.remaining)
+      r4 <- e4.parse(r3.remaining)
+      r5 <- e5.parse(r4.remaining)
+      r6 <- e6.parse(r5.remaining)
+    } yield ParseSucceed(
+      (
+        r1.result,
+        r2.result,
+        r3.result,
+        r4.result,
+        r5.result,
+        r6.result
+      ),
+      r6.remaining
+    )
+  }
+
+  final def sequenceWithout[A1, A2, A3, A4, A5, A6](delimiter: => Parser[_])(
+      e1: => Parser[A1],
+      e2: => Parser[A2],
+      e3: => Parser[A3],
+      e4: => Parser[A4],
+      e5: => Parser[A5],
+      e6: => Parser[A6]
+  ): Parser[(A1, A2, A3, A4, A5, A6)] = {
+    sequence(
+      dropRight(e1, delimiter),
+      dropRight(e2, delimiter),
+      dropRight(e3, delimiter),
+      dropRight(e4, delimiter),
+      dropRight(e5, delimiter),
+      e6
+    )
+  }
+
+  final def sequence[A1, A2, A3, A4, A5, A6, A7](
+      e1: => Parser[A1],
+      e2: => Parser[A2],
+      e3: => Parser[A3],
+      e4: => Parser[A4],
+      e5: => Parser[A5],
+      e6: => Parser[A6],
+      e7: => Parser[A7]
+  ): Parser[(A1, A2, A3, A4, A5, A6, A7)] = { (in: String) =>
+    for {
+      r1 <- e1.parse(in)
+      r2 <- e2.parse(r1.remaining)
+      r3 <- e3.parse(r2.remaining)
+      r4 <- e4.parse(r3.remaining)
+      r5 <- e5.parse(r4.remaining)
+      r6 <- e6.parse(r5.remaining)
+      r7 <- e7.parse(r6.remaining)
+    } yield ParseSucceed(
+      (
+        r1.result,
+        r2.result,
+        r3.result,
+        r4.result,
+        r5.result,
+        r6.result,
+        r7.result
+      ),
+      r7.remaining
+    )
+  }
+
+  final def sequence[A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11](
+      e1: => Parser[A1],
+      e2: => Parser[A2],
+      e3: => Parser[A3],
+      e4: => Parser[A4],
+      e5: => Parser[A5],
+      e6: => Parser[A6],
+      e7: => Parser[A7],
+      e8: => Parser[A8],
+      e9: => Parser[A9],
+      e10: => Parser[A10],
+      e11: => Parser[A11]
+  ): Parser[(A1, A2, A3, A4, A5, A6, A7, A8, A9, A10, A11)] = { (in: String) =>
+    for {
+      r1 <- e1.parse(in)
+      r2 <- e2.parse(r1.remaining)
+      r3 <- e3.parse(r2.remaining)
+      r4 <- e4.parse(r3.remaining)
+      r5 <- e5.parse(r4.remaining)
+      r6 <- e6.parse(r5.remaining)
+      r7 <- e7.parse(r6.remaining)
+      r8 <- e8.parse(r7.remaining)
+      r9 <- e9.parse(r8.remaining)
+      r10 <- e10.parse(r9.remaining)
+      r11 <- e11.parse(r10.remaining)
+    } yield ParseSucceed(
+      (
+        r1.result,
+        r2.result,
+        r3.result,
+        r4.result,
+        r5.result,
+        r6.result,
+        r7.result,
+        r8.result,
+        r9.result,
+        r10.result,
+        r11.result
+      ),
+      r11.remaining
+    )
   }
 
   /** 選択
@@ -105,6 +286,18 @@ object Parser {
     }
   }
 
+  /** 1個以上
+    * PEGの表記で e+ と表されるもの
+    * PEGにおける繰り返しは常に貪欲でありマッチし続ける限り入力を消費するが、それだけではなく、正規表現とは異なりバックトラックしない。
+    */
+  final def oneOrMore[A](e: => Parser[A]): Parser[(A, List[A])] = {
+    sequence(e, zeroOrMore(e))
+  }
+
+  final def oneOrMoreWithout[A](delimiter: => Parser[_])(e: => Parser[A]): Parser[(A, List[A])] = {
+    sequence(dropRight(e, delimiter), zeroOrMoreWithout(delimiter)(e))
+  }
+
   /** 0個以上
     * PEGの表記で e* と表されるもの
     * PEGにおける繰り返しは常に貪欲でありマッチし続ける限り入力を消費するが、それだけではなく、正規表現とは異なりバックトラックしない。
@@ -119,6 +312,29 @@ object Parser {
         }
         Right(ParseSucceed(s1.result :: s2.result, s2.remaining))
     }
+  }
+
+  final def zeroOrMoreWithout[A](delimiter: => Parser[_])(e: => Parser[A]): Parser[List[A]] = {
+    zeroOrMore(dropRight(e, delimiter))
+  }
+
+  /** 省略可能
+    * PEGの表記で e? と表されるもの
+    * e によるパースに成功した場合はその結果をSomeに包んで返し、失敗した場合は None を返す。失敗したときは文字列は消費しない。
+    */
+  final def optional[A](e: => Parser[A]): Parser[Option[A]] = { (in: String) =>
+    e.parse(in) match {
+      case Left(_)  => Right(ParseSucceed(None, in))
+      case Right(s) => Right(ParseSucceed(Some(s.result), s.remaining))
+    }
+  }
+
+  /** 右側を読み飛ばすためのユーティリティ
+    * parser で指定された文字列をパースし、その直後に next で指定された文字列がある場合、
+    * next でパースした部分まで文字列を消費し、 parser の結果を返す
+    */
+  def dropRight[A](parser: Parser[A], next: => Parser[_]): Parser[A] = {
+    sequence(parser, optional(next)).map((a, _) => a)
   }
 
 }
