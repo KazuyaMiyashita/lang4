@@ -13,5 +13,5 @@ object Operator {
   case object GreaterOrEqual extends Operator(">=")
   case object Equal extends Operator("==")
   case object NotEqual extends Operator("!=")
-  
+
 }
